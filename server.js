@@ -16,7 +16,7 @@ const db = mysql.createConnection(
   {
     host: "localhost",
     user: "root",
-    password: "root",
+    password: "Tru0ngDu0ng$",
     database: "employee_management_system_db",
   }
 );

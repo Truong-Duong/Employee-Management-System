@@ -1,33 +1,44 @@
--- Drop Database
 DROP DATABASE IF EXISTS employee_management_system_db;
-
--- Create Database
 CREATE DATABASE employee_management_system_db;
 
 USE employee_management_system_db;
 
 DROP TABLE IF EXISTS departments;
+DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS managers;
+DROP TABLE IF EXISTS employees;
+
 CREATE TABLE departments (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(30) NOT NULL
 );
 
-DROP TABLE IF EXISTS roles;
 CREATE TABLE roles (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(30) NOT NULL,
   salary DECIMAL NOT NULL,
-  department_id INT,
-  FOREIGN KEY(department_id) REFERENCES departments(id)
+  department_id INTEGER,
+  FOREIGN KEY(department_id)
+  REFERENCES departments(id)
 );
 
-DROP TABLE IF EXISTS employees;
+CREATE TABLE managers (
+  id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  first_name VARCHAR(30),
+  last_name VARCHAR(30),
+  department_id INTEGER,
+  FOREIGN KEY (department_id)
+  REFERENCES department(id)
+);
+
 CREATE TABLE employees (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
-  role_id INT NOT NULL,
-  manager_id INT,
-  FOREIGN KEY(role_id) REFERENCES roles(id),
-  FOREIGN KEY(manager_id) REFERENCES roles(id)
+  role_id INTEGER NOT NULL,
+  manager_id INTEGER,
+  FOREIGN KEY(role_id) 
+  REFERENCES roles(id),
+  FOREIGN KEY(manager_id)
+  REFERENCES manager(id)
 );

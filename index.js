@@ -61,17 +61,6 @@ inquirer
         "Claire Redfield",  
       ],
     },
-    {
-    type: "list",
-      message: "Which managers role do you want to update?",
-      name: "employee",
-      choices: [
-        "Billy Coen", 
-        "Ada Wong",      
-        "Jake Muller",    
-        "Ethan Winters",   
-      ],
-    },
   ])
 
   .then((data) => {

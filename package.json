@@ -1,0 +1,22 @@
+{
+  "name": "employee-management-system",
+  "version": "1.0.0",
+  "description": "Add a new employee and role",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Truong-Duong/Employee-Management-System.git"
+  },
+  "author": "Truong Duong",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Truong-Duong/Employee-Management-System/issues"
+  },
+  "homepage": "https://github.com/Truong-Duong/Employee-Management-System#readme",
+  "dependencies": {
+    "inquirer": "^8.2.0"
+  }
+}

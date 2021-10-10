@@ -66,7 +66,7 @@ class databaseMethods {
         );  
     }
     
-      selectManager() {
+    selectManager() {
         return this.database.promise().query( 
             `
             SELECT concat(managers.first_name,' ',managers.last_name) as name FROM managers;

@@ -1,7 +1,7 @@
 # Employee-Management-System
 
 ## Description
-Create a employee database by using sql.
+Create a employee database by using mysql.
 
 ## Table of Contents
 * [Installation](#installation)

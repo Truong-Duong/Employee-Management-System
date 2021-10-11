@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS employees;
 
 CREATE TABLE departments (
   id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(45) NOT NULL
+  dept_name VARCHAR(45) NOT NULL
 );
 
 CREATE TABLE roles (
@@ -29,6 +29,4 @@ CREATE TABLE employees (
   manager_id INTEGER NOT NULL,
   FOREIGN KEY(role_id) 
   REFERENCES roles(id),
-  FOREIGN KEY(manager_id)
-  REFERENCES roles(id)
 );

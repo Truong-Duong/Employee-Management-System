@@ -1,6 +1,6 @@
 USE employee_management_system_db
 
-INSERT INTO departments (name)
+INSERT INTO departments (dept_name)
 VALUES  
 ("Sales"),
 ("Engineering"),
@@ -9,7 +9,7 @@ VALUES
 
 INSERT INTO roles (title, salary, department_id)
 VALUES  
-("Salesperson",         35000,  1),
+("Sales",         35000,  1),
 ("Sales Lead",          80000,  1);
 ("Software Engineer",   160000, 2),
 ("Mechanical Engineer", 60000,  2),

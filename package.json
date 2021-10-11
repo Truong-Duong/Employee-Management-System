@@ -1,22 +1,27 @@
 {
-  "name": "employee-management-system",
+  "name": "Employee-Management-System",
   "version": "1.0.0",
-  "description": "Add a new employee and role",
+  "description": "Create a employee database by using mysql.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Truong-Duong/Employee-Management-System.git"
   },
-  "author": "Truong Duong",
+  "keywords": [],
+  "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Truong-Duong/Employee-Management-System/issues"
   },
   "homepage": "https://github.com/Truong-Duong/Employee-Management-System#readme",
   "dependencies": {
-    "inquirer": "^8.2.0"
+    "console.table": "^0.10.0",
+    "express": "^4.17.1",
+    "inquirer": "^8.2.0",
+    "mysql2": "^2.3.0"
   }
 }

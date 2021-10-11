@@ -20,28 +20,13 @@ VALUES
 
         
 
-INSERT INTO employees (first_name, last_name, role_id, manager_id)
+INSERT INTO employees (first_name, last_name, role_id)
 VALUES  
-("Matt",      "Matsil",     1, 1),
-("Anika",     "Krieger",    1, 1),  
-("Anna",      "Kretsinger", 2, 1),
-("Ari",       "Drake",      2, 1),
-("Caroline",  "Heuer",      3, 2),
-("Julia",     "Cunningham", 3, 2),
-("Katherine", "Deloney",    4, 2),
-("Kiley",     "Pittman",    4, 2),
-("Sarah",     "Pinkerton",  5, 3);
-("Katie",     "Barlow",     5, 3);
-("Chris",     "Redfield",   6, 3);
-("Jill",      "Valentine",  6, 3);
-("Albert",    "Wesker",     7, 4);
-("Rebecca",   "Chambers",   7, 4);
-("Leon",      "Kennedy",    8, 4);
-("Claire",    "Redfield",   8, 4);
-
-INSERT INTO managers (first_name, last_name, department_id)
-VALUES
-("Billy",     "Coen",      1);
-("Ada",       "Wong",      2);
-("Jake",      "Muller",    3);
-("Ethan",     "Winters",   4);
+("Claire",    "Redfield",   1);
+("Anna",      "Kretsinger", 2),
+("Caroline",  "Heuer",      3),
+("Katherine", "Deloney",    4),
+("Sarah",     "Pinkerton",  5);
+("Chris",     "Redfield",   6);
+("Albert",    "Wesker",     7);
+("Leon",      "Kennedy",    8);

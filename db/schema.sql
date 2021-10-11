@@ -10,33 +10,31 @@ DROP TABLE IF EXISTS employees;
 
 CREATE TABLE departments (
   id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(30) NOT NULL
+  name VARCHAR(45) NOT NULL
 );
 
 CREATE TABLE roles (
   id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(30) NOT NULL,
+  title VARCHAR(45) NOT NULL,
   salary DECIMAL NOT NULL,
-  department_id INTEGER,
+  department_id INTEGER NOT NULL,
   FOREIGN KEY(department_id)
   REFERENCES departments(id)
 );
 
 CREATE TABLE managers (
   id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  first_name VARCHAR(30),
-  last_name VARCHAR(30),
-  department_id INTEGER,
-  FOREIGN KEY (department_id)
-  REFERENCES department(id)
+  first_name VARCHAR(45) NOT NULL,
+  last_name VARCHAR(45) NOT NULL,
+  department_id INTEGER NOT NULL,
 );
 
 CREATE TABLE employees (
   id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  first_name VARCHAR(30) NOT NULL,
-  last_name VARCHAR(30) NOT NULL,
+  first_name VARCHAR(45) NOT NULL,
+  last_name VARCHAR(45) NOT NULL,
   role_id INTEGER NOT NULL,
-  manager_id INTEGER,
+  manager_id INTEGER NOT NULL,
   FOREIGN KEY(role_id) 
   REFERENCES roles(id),
   FOREIGN KEY(manager_id)

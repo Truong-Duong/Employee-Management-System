@@ -1,232 +1,495 @@
-//Dependencies
-const express = require("express");
-const mysql = require("mysql2");
+const DBMethods = require("./db/query");
 const inquirer = require("inquirer");
-const cTable = require("console.table");
+const { title } = require("process");
+const db = require("./db/connection");
+const { method } = require("bluebird");
 
-//create PORT variable and instantiate express
-const PORT = process.env.PORT || 3001;
-const app = express();
-
-//express middleware
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-const db = mysql.createConnection(
-  {
-    host: "localhost",
-    user: "root",
-    password: "Tru0ngDu0ng$",
-    database: "employee_management_system_db",
-  },
-  console.log(`Connected to the employee_management_db database.`)
-);
-
-const roleArray = ["Sales", "Engineering", "Finance", "Legal"];
-const titleArray = [
-  "Software Engineer",
-  "Accountant",
-  "Lawyer",
-  "Salesperson",
-  "Sales Lead",
-];
-
-function mainPrompt() {
+const initInquirer = () =>
   inquirer
     .prompt([
       {
         type: "list",
-        message: "What would you like to do? ",
-        name: "choice",
+        name: "navMenu",
+        message: "Welcome! Please Select Option",
         choices: [
-          "View departments",
-          "View roles",
-          "View employees",
-          "Add department",
-          "Add role",
-          "Add employee",
-          "Update an employee role",
+          "View all Employees",
+          "View all Departments",
+          "View all Roles",
+          "Add a Department",
+          "Add a Role",
+          "Add an Employee",
+          "Update Employee Role",
+          "Update Manager",
+          "View Employees by Manager",
+          "View Employees by Department",
+          "Delete Department",
+          "Delete Role",
+          "Delete Employee",
+          "View Department Budget",
+          "Quit",
         ],
       },
     ])
-    .then(async function ({ choice }) {
-      switch (choice) {
-        case "View departments":
-          db.query(
-            "SELECT id, name AS Department FROM departments;",
-            function (err, results) {
-              console.table(results); // results contains rows returned by server
-            }
-          );
-          await cleanUp();
-          mainPrompt();
+    //Evaluates User Selection and runs functions
+    .then((data) => {
+      switch (data.navMenu) {
+        case "View all Employees":
+          viewEmployee(); //fixed
           break;
-        case "View roles":
-          db.query("SELECT title, salary FROM roles;", function (err, results) {
-            console.table(results); // results contains rows returned by server
-          });
-          await cleanUp();
-          mainPrompt();
+        case "View all Departments": //fixed
+          viewDepartments();
           break;
-        case "View employees":
-          db.query(
-            "SELECT first_name, last_name, title, salary FROM employees JOIN roles ON employees.role_id = roles.id;",
-            function (err, results) {
-              console.table(results); // results contains rows returned by server
-            }
-          );
-          await cleanUp();
-          mainPrompt();
+        case "View all Roles": //fixed
+          selectRoles();
           break;
-        case "Add department":
-          addDepartment();
+        case "Add an Employee":
+          newTeammate();
           break;
-        case "Add role":
-          addRole();
+        case "Add a Department":
+          enterDept();
           break;
-        case "Add employee":
-          addEmployee();
+        case "Add a Role":
+          buildRole();
           break;
-        case "Update an employee role":
-          updateEmployee();
+        case "Update Employee Role":
+          updateRole();
           break;
+        case "Update Manager":
+          updateMan();
+          break;
+        case "Delete Department":
+          removeDep();
+          break;
+        case "Delete Role":
+          removeRole();
+          break;
+        case "Delete Employee":
+          removeEmp();
+          break;
+        case "View Department Budget":
+          displayBudget();
+          break;
+        case "View Employees by Department":
+          empByDep();
+          break;
+        case "View Employees by Manager":
+          empByMan();
+          break;
+        case "Quit":
+          console.log("Goodbye");
+          process.exit();
       }
     });
+
+async function viewEmployee() {
+  const methods = new DBMethods();
+
+  const employee = await methods.viewEmps();
+
+  console.table(employee[0]);
+  initInquirer();
 }
 
-function addDepartment() {
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        message: "What is the name of the new department?",
-        name: "name",
-      },
-    ])
-    .then(async function ({ name }) {
-      roleArray.push(name);
-      db.query(`INSERT INTO departments (name) VALUES ("${name}")`,
-      function(err, results) {
-        return; // results contains rows returned by server
-      }
-      );
-      await cleanUp();
-      mainPrompt();
-    });
+async function viewDepartments() {
+  const methods = new DBMethods();
+
+  const department = await methods.viewDep();
+
+  console.table(department[0]);
+  initInquirer();
 }
 
-function addRole() {
-  inquirer
-    .prompt([
+async function selectRoles() {
+  const methods = new DBMethods();
+
+  const roles = await methods.viewRoles();
+
+  console.table(roles[0]);
+  initInquirer();
+}
+
+async function departmentMenu() {
+  depArray = [];
+  const methods = await new DBMethods();
+  let departments = await methods.viewDep();
+  departments = departments[0];
+  departments.forEach((element) => depArray.push(element.name));
+  inquirer.prompt([
+    {
+      type: "list",
+      name: "Department",
+      message: "Please Select department",
+      choices: depArray,
+    },
+  ]);
+}
+
+async function EmployeeMenu() {
+  let empArray = [];
+  const methods = new DBMethods();
+  let employees = await methods.viewEmps();
+  employees = employees[0];
+  employees.forEach((element) => empArray.push(element.Name));
+
+  inquirer.prompt([
+    {
+      type: "list",
+      name: "Employees",
+      message: "Please Select Employee",
+      choices: empArray,
+    },
+  ]);
+}
+
+async function roleMenu() {
+  let roleArray = [];
+  const methods = new DBMethods();
+  let roles = await methods.viewRoles();
+  roles = roles[0];
+  roles.forEach((element) => roleArray.push(element.Title));
+
+  await inquirer.prompt([
+    {
+      type: "list",
+      name: "Roles",
+      message: "Please Select Role",
+      choices: roleArray,
+    },
+  ]);
+}
+
+async function managerMenu() {
+  let managerArray = [];
+  const methods = await new DBMethods();
+  let manager = await methods.selectManager();
+  manager = manager[0];
+  manager.forEach((element) => managerArray.push(element.name));
+  await inquirer.prompt([
+    {
+      type: "list",
+      message: "Assign Manager",
+      name: "EEMan",
+      choices: managerArray,
+    },
+  ]);
+}
+
+async function buildRole() {
+  let depArray = [];
+  const methods = await new DBMethods();
+  let departments = await methods.viewDep();
+  departments = departments[0];
+  departments.forEach((element) => depArray.push(element.name));
+  const roleName = await inquirer.prompt([
+    {
+      type: "input",
+      name: "role",
+      message: "Enter Role Title",
+    },
+    {
+      type: "input",
+      name: "salary",
+      message: "Enter Salary",
+    },
+
+    {
+      type: "list",
+      name: "Dep",
+      message: "Select Department",
+      choices: depArray,
+    },
+  ]);
+  const { role, salary, Dep } = roleName;
+  await methods.addRole(role, salary, Dep);
+  console.log("Role Added");
+  initInquirer();
+}
+
+async function enterDept() {
+  try {
+    const methods = await new DBMethods();
+    const dep = await inquirer.prompt([
+      {
+        type: "Input",
+        name: "choice",
+        message: "Please Enter New Department Name",
+      },
+    ]);
+    const department = dep.choice;
+    methods.addDepartment(department);
+  } catch (err) {
+    console.log(err);
+  }
+  initInquirer();
+}
+
+async function newTeammate() {
+  try {
+    const newEmpName = await inquirer.prompt([
       {
         type: "input",
-        message: "What is the title of the new role?",
-        name: "title",
+        name: "first",
+        message: "Enter First Name",
       },
       {
         type: "input",
-        message: "What is the salary of the new role?",
-        name: "salary",
+        name: "last",
+        message: "Enter last Name",
       },
+    ]);
+    let roleArray = [];
+    const methods = await new DBMethods();
+    let roles = await methods.viewRoles();
+    roles = roles[0];
+    await roles.forEach((element) => roleArray.push(element.Title));
+
+    const rSelect = await inquirer.prompt([
       {
         type: "list",
-        message: "Which department is this role in? ",
-        name: "department_id",
+        name: "roles",
+        message: "Please Select Role",
         choices: roleArray,
       },
-    ])
-    .then(async function ({ title, salary, department_id }) {
-      titleArray.push(title);
-      for (let i = 0; i <= roleArray.length; i++) {
-        if (department_id == roleArray[i]) {
-          department_id = roleArray.indexOf(roleArray[i]) + 1;
-        }
-      }
-      db.query(
-        `INSERT INTO roles (title, salary, department_id) VALUES ("${title}", ${salary}, ${department_id});`,
-      );
-      await cleanUp();
-      mainPrompt();
-    });
-}
-
-function addEmployee() {
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        message: "What is the first name of the employee?",
-        name: "first_name",
-      },
-      {
-        type: "input",
-        message: "What is the last name of the employee?",
-        name: "last_name",
-      },
+    ]);
+    let managerArray = [];
+    let manager = await methods.selectManager();
+    manager = manager[0];
+    manager.forEach((element) => managerArray.push(element.name));
+    const eeMan = await inquirer.prompt([
       {
         type: "list",
-        message: "Which title does this employee have? ",
-        name: "role_id",
-        choices: titleArray,
+        message: "Assign Manager",
+        name: "select",
+        choices: managerArray,
       },
-    ])
-    .then(async function ({ first_name, last_name, role_id }) {
-      for (let i = 0; i <= titleArray.length; i++) {
-        if (role_id == titleArray[i]) {
-          role_id = titleArray.indexOf(titleArray[i]) + 1;
-        }
-      }
-      db.query(
-        `INSERT INTO employees (first_name, last_name, role_id) VALUES ("${first_name}", "${last_name}", ${role_id});`
-      );
-      await cleanUp();
-      mainPrompt();
-    });
+    ]);
+    const chosenRole = rSelect.roles;
+    const chosenManager = eeMan.select;
+    const { last, first } = newEmpName;
+    await methods.addEmployee(first, last, chosenRole, chosenManager);
+  } catch (err) {
+    console.log(err);
+  }
+  initInquirer();
 }
 
-function updateEmployee() {
-  inquirer
-    .prompt([
+async function updateRole() {
+  try {
+    const employeeList = await inquirer.prompt([
       {
         type: "input",
-        message: "What is the last name of the employee?",
-        name: "last_name",
+        name: "employees",
+        message: "Enter Employee ID",
       },
+    ]);
+
+    let roleArray = [];
+    const methods = await new DBMethods();
+    let roles = await methods.viewRoles();
+    roles = roles[0];
+    roles.forEach((element) => roleArray.push(element.Title));
+
+    const roleList = await inquirer.prompt([
       {
         type: "list",
-        message: "Which tile will the employee now have? ",
-        name: "role_id",
-        choices: titleArray,
+        name: "Roles",
+        message: "Please Select Role",
+        choices: roleArray,
       },
-    ])
-    .then(async function ({ last_name, role_id }) {
-      for (let i = 0; i <= titleArray.length; i++) {
-        if (role_id == titleArray[i]) {
-          role_id = titleArray.indexOf(titleArray[i]) + 1;
-          if (role_id > titleArray.length){
-            role_id = role_id - 1;
-          }
-        }
-      }
-      db.query(
-        `UPDATE employees SET role_id = ${role_id} WHERE last_name = "${last_name}";`
-      );
-      await cleanUp();
-      mainPrompt();
-    });
+    ]);
+    const selectedEmployee = employeeList.employees;
+    const selectedRole = roleList.Roles;
+    await methods.updateEmpRole(selectedRole, selectedEmployee);
+  } catch (err) {
+    console.log(err);
+  }
+  initInquirer();
 }
 
-function cleanUp() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve("resolved");
-    }, 1000);
-  });
+async function updateMan() {
+  try {
+    const employeeList = await inquirer.prompt([
+      {
+        type: "input",
+        name: "id",
+        message: "Enter Employee ID",
+      },
+    ]);
+    let managerArray = [];
+    const methods = await new DBMethods();
+    let manager = await methods.selectManager();
+    manager = manager[0];
+    manager.forEach((element) => managerArray.push(element.name));
+    const eeMan = await inquirer.prompt([
+      {
+        type: "list",
+        message: "Assign Manager",
+        name: "select",
+        choices: managerArray,
+      },
+    ]);
+
+    const selectedManager = eeMan.select;
+    const selectedEmployee = employeeList.id;
+    methods.updateManager(selectedManager, selectedEmployee);
+  } catch (err) {
+    console.log(err);
+  }
+  initInquirer();
 }
 
-//eventhandler to start the server.
-app.listen(PORT, () => {
-  console.log(`Listening`);
-});
+async function removeDep() {
+  try {
+    depArray = [];
+    const methods = await new DBMethods();
+    let departments = await methods.viewDep();
+    departments = departments[0];
+    departments.forEach((element) => depArray.push(element.name));
+    const dep = await inquirer.prompt([
+      {
+        type: "list",
+        name: "choice",
+        message: "Delete Department",
+        choices: depArray,
+      },
+    ]);
 
-mainPrompt();
+    const select = dep.choice;
+    methods.deleteDepartment(select);
+  } catch (err) {
+    console.log(err);
+  }
+  initInquirer();
+}
+
+async function removeRole() {
+  try {
+    let roleArray = [];
+    const methods = await new DBMethods();
+    let roles = await methods.viewRoles();
+    roles = roles[0];
+    await roles.forEach((element) => roleArray.push(element.Title));
+
+    const chosenRole = await inquirer.prompt([
+      {
+        type: "list",
+        name: "choice",
+        message: "Please Select Role",
+        choices: roleArray,
+      },
+    ]);
+    const select = chosenRole.choice;
+    console.log(select);
+    methods.deleteRole(select);
+  } catch (err) {
+    console.log(err);
+  }
+  initInquirer();
+}
+
+async function removeEmp() {
+  try {
+    let empArray = [];
+    const methods = new DBMethods();
+    let employees = await methods.viewEmps();
+    employees = employees[0];
+    employees.forEach((element) => empArray.push(element.Name));
+
+    const removeMe = await inquirer.prompt([
+      {
+        type: "list",
+        name: "badEE",
+        message: "Please Select Employee",
+        choices: empArray,
+      },
+    ]);
+    const unluckyEE = removeMe.badEE;
+    methods.deleteEmployee(unluckyEE);
+  } catch (err) {
+    console.log(err);
+  }
+  initInquirer();
+}
+
+async function displayBudget() {
+  try {
+    depArray = [];
+    const methods = await new DBMethods();
+    let departments = await methods.viewDep();
+    departments = departments[0];
+    departments.forEach((element) => depArray.push(element.name));
+    depArray.push("View Total Budget");
+    const selectdep = await inquirer.prompt([
+      {
+        type: "list",
+        name: "menu",
+        message: "Please Select department",
+        choices: depArray,
+      },
+    ]);
+    if (selectdep.menu === "View Total Budget") {
+      let totalBudget = await methods.budgetAll();
+      totalBudget = totalBudget[0];
+      console.table(totalBudget);
+    } else {
+      const budget = selectdep.menu;
+      let result = await methods.budgetByDept(budget);
+      const spread = result[0];
+      console.table({ ...spread });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+  initInquirer();
+}
+
+async function empByDep() {
+  try {
+    depArray = [];
+    const methods = await new DBMethods();
+    let departments = await methods.viewDep();
+    departments = departments[0];
+    departments.forEach((element) => depArray.push(element.name));
+    let departmentChoice = await inquirer.prompt([
+      {
+        type: "list",
+        name: "choice",
+        message: "Please Select department",
+        choices: depArray,
+      },
+    ]);
+    let selection = departmentChoice.choice;
+    let query = await methods.employeeByDept(selection);
+    console.table(query[0]);
+  } catch (err) {
+    console.log(err);
+  }
+  initInquirer();
+}
+
+async function empByMan() {
+  try {
+    let managerArray = [];
+    const methods = await new DBMethods();
+    let manager = await methods.selectManager();
+    manager = manager[0];
+    manager.forEach((element) => managerArray.push(element.name));
+    const managerSelection = await inquirer.prompt([
+      {
+        type: "list",
+        message: "Select Manager",
+        name: "EEMan",
+        choices: managerArray,
+      },
+    ]);
+    let selection = managerSelection.EEMan;
+    console.table(selection);
+    let query = await methods.employeeByManager(selection);
+    console.table(query[0]);
+  } catch (err) {
+    console.log(err);
+  }
+  initInquirer();
+}
+
+initInquirer();

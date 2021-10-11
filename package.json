@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Truong-Duong/Employee-Management-System#readme",
   "dependencies": {
+    "bluebird": "^3.7.2",
     "console.table": "^0.10.0",
     "express": "^4.17.1",
     "inquirer": "^8.2.0",
